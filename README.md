@@ -1,2 +1,8 @@
 # systems-path
-From frontend down to the machine: logic gates, Linux, networks, security. Code written by hand
+
+Фронтендер, который спускается вниз: от вентилей до Linux, сетей и безопасности.
+Весь код здесь написан руками, без ИИ. Конспекты лежат в бумажной тетради, сюда попадают выжимки.
+
+## Части
+- module-1-logic: цифровая логика, вентили из NAND
+- linux: скоро
