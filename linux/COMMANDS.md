@@ -113,3 +113,26 @@
 | `chmod 700 путь` | права: только я | `chmod 700 ~/.ssh` | 600 для файлов |
 | `echo $HOME` | какая у меня домашняя папка | | |
 | `~.` | оборвать зависшую ssh-сессию | | тильда, точка |
+
+## SSH-сервер и файрвол (урок 7)
+
+| Команда | Что делает | Пример | Осторожно |
+|---|---|---|---|
+| `ps aux \| grep sshd` | кто подключён к серверу | | последняя строка это сам grep |
+| `sshd -T` | итоговые настройки ssh-сервера | `sudo sshd -T \| grep -i permitrootlogin` | большая T |
+| `sshd -t` | проверить конфиг на опечатки | `sudo sshd -t` | маленькая t, пусто значит ок |
+| `grep -n` | поиск с номерами строк | `grep -n "PermitRootLogin" /etc/ssh/sshd_config` | |
+| `grep "a\|b"` | искать a или b | | |
+| `grep "^слово"` | строки, которые начинаются со слова | | отсекает комментарии |
+| `head -15 файл` | начало файла | `head -15 /etc/ssh/sshd_config` | искать Include |
+| `nano` + `Ctrl+_` | перейти на строку по номеру | | |
+| `systemctl restart ssh` | перезапустить ssh-сервер | `sudo systemctl restart ssh` | сначала `sshd -t` |
+| `systemctl status имя` | работает ли служба | `systemctl status ssh` | выход q |
+| `ssh -o PubkeyAuthentication=no` | попытка входа без ключа | `ssh -o PubkeyAuthentication=no user@IP_сервера` | должен отказать |
+| `ufw status` | состояние файрвола и правила | `sudo ufw status` | |
+| `ufw allow порт` | открыть порт | `sudo ufw allow 22` | до enable |
+| `ufw enable` | включить файрвол | `sudo ufw enable` | только после allow 22 |
+| `ufw delete allow порт` | убрать правило | `sudo ufw delete allow 80` | |
+| `apt list --installed` | что установлено | `apt list --installed \| grep nginx` | |
+
+Порядок правки ssh-сервера: два окна → nano → `sshd -t` → `restart` → `sshd -T` → вход из нового окна.
