@@ -136,3 +136,68 @@
 | `apt list --installed` | что установлено | `apt list --installed \| grep nginx` | |
 
 Порядок правки ssh-сервера: два окна → nano → `sshd -t` → `restart` → `sshd -T` → вход из нового окна.
+
+## День рук (15 ноября)
+
+| Команда | Что делает | Пример | Осторожно |
+|---|---|---|---|
+| `chmod 600 файл` | права: только я читаю и пишу | `chmod 600 notes.txt` | r=4 w=2 x=1, порядок хозяин/группа/остальные |
+| `chmod 700 папка` | права: только я захожу | `chmod 700 ~/practice` | у папки x значит «войти» |
+| `tail -3 файл` | последние три строки | `tail -3 /etc/passwd` | брат `head` |
+| `grep имя /etc/passwd` | найти пользователя | `grep iuliia /etc/passwd` | поля через двоеточие |
+| `cat /var/run/reboot-required.pkgs` | кто попросил перезагрузку | | файл есть только если нужна |
+| `grep -l` | только имена файлов, где нашлось (**l**ist) | `sudo grep -ril слово /var/lib/cloud/` | |
+| `ls -l файл` | когда файл меняли | | смотреть дату и размер |
+| `Ctrl+C` | прервать команду | | команда без файла ждёт клавиатуру |
+| `sudo nano /etc/ssh/sshd_config.d/00-имя.conf` | свой файл настроек ssh | | читается раньше главного и побеждает |
+
+## Журнал (урок 8, часть 1)
+
+| Команда | Что делает | Пример | Осторожно |
+|---|---|---|---|
+| `sudo tail -5 /var/log/auth.log` | последние записи журнала входов | | хозяин syslog, читаю через sudo |
+| `sudo grep слово /var/log/auth.log` | найти записи | `sudo grep "Invalid user" /var/log/auth.log` | два слова в кавычки |
+| `grep -v слово` | оставить строки, где слова нет (in**v**ert) | `\| grep -v sudo` | убирает мои же команды поиска |
+| `grep -c слово` | посчитать строки со словом (**c**ount) | | |
+| `wc -l` | посчитать все строки (**l**ines) | `\| wc -l` | |
+| `awk '{print $6}'` | вынуть шестое слово из каждой строки | | пустое слово сдвигает номера |
+| `sort` | по алфавиту | | |
+| `uniq -c` | склеить одинаковых соседей и посчитать (**c**ount) | | без `sort` перед ним не работает |
+| `sort -rn` | по числу (**n**umeric), большие сверху (**r**everse) | | |
+| `head -10` | первые десять строк | | |
+| `grep -i` | без учёта регистра (**i**gnore case) | | может посчитать лишнее |
+
+Кто входил:
+
+    sudo grep "Accepted" /var/log/auth.log | grep -v sudo | tail -3
+
+Топ имён ботов (для адресов `$8`):
+
+    sudo grep "Invalid user" /var/log/auth.log | grep -v sudo | awk '{print $6}' | sort | uniq -c | sort -rn | head -10
+
+## fail2ban и журналы (урок 8, часть 2)
+
+| Команда | Что делает | Пример | Осторожно |
+|---|---|---|---|
+| `ls -l /var/log/auth.log*` | все файлы журнала входов | | `*` значит «и всё дальше» |
+| `sudo zgrep "слово" /var/log/auth.log*` | искать во всех, включая сжатые | `sudo zgrep "Accepted password" /var/log/auth.log*` | `.gz` обычный grep не читает |
+| `sudo apt install имя` | установить новую программу | `sudo apt install fail2ban` | сначала `apt update` |
+| `systemctl status fail2ban` | работает ли вышибала | | выход q |
+| `sudo systemctl restart fail2ban` | перезапустить | | служба `fail2ban`, не `fail2ban-client` |
+| `sudo nano /etc/fail2ban/jail.local` | свои правила | | заводской `jail.conf` не трогать |
+| `sudo fail2ban-client -t` | проверить настройки (**t**est) | | в конце должно быть OK |
+| `sudo fail2ban-client status` | список тюрем | | |
+| `sudo fail2ban-client status sshd` | что в тюрьме sshd | | Total не уменьшается, Currently это сейчас |
+| `sudo fail2ban-client get sshd bantime` | узнать правило | | ответ в секундах |
+| `sudo fail2ban-client set sshd banip АДРЕС` | забанить руками | | тренироваться на `203.0.113.5` |
+| `sudo fail2ban-client set sshd unbanip АДРЕС` | разбанить | | если забанили меня |
+| `sudo grep "Ban" /var/log/fail2ban.log` | история банов | | |
+| `sudo journalctl -u служба -n 10` | записи службы в журнале systemd (**u**nit, **n**umber) | `sudo journalctl -u fail2ban -n 10` | |
+
+Мои правила в `jail.local`:
+
+    [sshd]
+    bantime = 1h
+    bantime.increment = true
+
+Клавиши: `Tab` дописать, двойной `Tab` все варианты, `Ctrl+R` найти старую команду, стрелка вправо отредактировать найденное.
