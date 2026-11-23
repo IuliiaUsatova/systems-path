@@ -201,3 +201,30 @@
     bantime.increment = true
 
 Клавиши: `Tab` дописать, двойной `Tab` все варианты, `Ctrl+R` найти старую команду, стрелка вправо отредактировать найденное.
+
+## nginx и двери (урок 9)
+
+| Команда | Что делает | Пример | Осторожно |
+|---|---|---|---|
+| `sudo apt install nginx` | поставить веб-сервер | | сначала `apt update` |
+| `systemctl status nginx` | работает ли | | master и worker, выход q |
+| `sudo ss -tlnp` | кто сидит за какой дверью | | **s**ocket **s**tatistics: **T**CP, **l**istening, **n**umeric, **p**rocess |
+| `sudo ufw allow 80` | открыть дверь 80 охраннику | | без этого браузер не достучится |
+| `ls -l /var/www/html` | что лежит в папке сайта | | хозяин root |
+| `sudo nano /var/www/html/index.html` | своя страница | | путь набирать с Tab, не потерять `html` |
+| `sudo mv откуда куда` | переложить файл | `sudo mv /var/www/index.html /var/www/html/index.html` | |
+| `history \| grep nano \| tail -3` | что я набирала | | помогает найти опечатку в пути |
+| `curl http://localhost` | что отдаёт сервер, текстом, без браузера | | у curl нет кэша, показывает правду |
+| `curl -I http://localhost` | только заголовки ответа | | код 200, `Server: nginx` |
+| `Cmd+Shift+R` | обновить страницу в браузере без памяти | | если видно старое |
+| `ls -l /var/log/nginx` | журналы nginx | | `access.log` и `error.log`, хозяин www-data |
+| `sudo tail -10 /var/log/nginx/access.log` | кто приходил | | 200 нашёл, 404 не нашёл |
+| `sudo journalctl -u ssh -n 5` | журнал systemd для двери | | |
+
+Сколько было банов (счётчик всегда последний):
+
+    sudo grep "Ban" /var/log/fail2ban.log | grep -v "Increase" | wc -l
+
+Два условия, чтобы страница открылась: за дверью сидит программа (`ss -tlnp`) и дверь есть у охранника (`ufw status`).
+
+`0.0.0.0` слушает всех, `127.x` только сам сервер.
