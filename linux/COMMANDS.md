@@ -263,3 +263,13 @@
 | `df --output=pcent /` | disk free, percent | процент занятого диска | 11 |
 | `tail -1` | tail | последняя строка | 11 |
 | `tr -d ' %'` | translate, delete | удалить символы | 11 |
+
+| `for X in …; do …; done` | for / in / do / done | цикл по списку | 12 |
+| `systemctl is-active служба` | is active | работает ли служба | 12 |
+| `crontab -l` / `crontab -e` | list / edit | показать / править расписание | 12 |
+| `>>` | append | дописать в конец файла | 12 |
+| `wc -l` | word count, lines | посчитать строки | 12 |
+| `mkdir` | make directory | создать папку | 12 |
+| `tar -czf КУДА ЧТО` | create, gzip, file | создать сжатый архив | 12 |
+| `tar -tzf архив` | table of contents | содержимое архива | 12 |
+| `date +%F` | full date | дата ГГГГ-ММ-ДД | 12 |
